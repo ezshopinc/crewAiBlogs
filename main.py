@@ -1,3 +1,4 @@
+import json
 from dotenv import load_dotenv
 from crewai import Agent, Task, Crew, Process
 from langchain_openai import ChatOpenAI
@@ -42,41 +43,13 @@ def get_webpage_contents(url: str):
 
 # Agents
 
-job_crawler = Agent(
-    role='Job Description Crawler',
-    goal='Extract the relevant job description, requirements and qualificiations',
+business_crawler = Agent(
+    role='Business Description Crawler',
+    goal='Extract the relevant business description and relative information about what they are selling',
     backstory='Specialized in parsing HTML and retrieving important information from it',
+    # You'd need to define these tools
     verbose=True,
     tools=[get_webpage_contents],
-    allow_delegation=False,
-    llm=model
-)
-
-cv_modifier = Agent(
-    role='CV/Resume Writer',
-    goal='Write a top-notch CV that increases the chance of landing an interview',
-    backstory='Expert in writing CV that is best recieved by the recruiting team and HR',
-    verbose=True,
-    tools=[fetch_pdf_content],
-    allow_delegation=False,
-    llm=model
-)
-
-cover_letter_modifier = Agent(
-    role='Cover Letter Writer',
-    goal='Write an intriguing cover letter that boosts the chance of landing an interview',
-    backstory='Expert in writing Cover Letter that is best recieved by the recruiting team and HR',
-    verbose=True,
-    tools=[fetch_pdf_content],
-    allow_delegation=False,
-    llm=model
-)
-
-recruiter = Agent(
-    role='Hiring Manager',
-    goal='Analyze how well a candidate is suited for a job description, given their CV and Cover Letter',
-    backstory='Experienced hiring manager with an especialization of giving feedback to job seekers',
-    verbose=True,
     allow_delegation=False,
     llm=model
 )
@@ -84,62 +57,39 @@ recruiter = Agent(
 # Tasks
 
 
-def extract_job_information(page_url):
+def create_ecommerce_analysis_task(page_url):
     return Task(
-        description=f"Given this url: {page_url}, extract the job description, and relative information about the job",
-        agent=job_crawler,
-        expected_output="Key points of the job description, requirements, and qualifications needed for the job",
+        description=f"Given this url: {page_url}, extract the business description and relative information about what they are selling",
+        agent=business_crawler,
+        expected_output="Key insights about the business, including product offerings, target audience, unique selling propositions, and overall business model",
     )
 
-
-def cv_modifying(cv_path):
-    return Task(
-        description=f"Read the CV at this local path: {cv_path}, then\
-        modify the keypoints and the order of the skills, to make it emphasize what is needded by the job.\
-        Do NOT add any extra skill or new information, keep it honest.",
-        agent=cv_modifier,
-        expected_output="A modified version of CV, tailor-made for the job description",
-    )
-
-
-def cover_letter_modifying(cv_path):
-    return Task(
-        description=f"Read the cover letter at this local path: {cv_path},\
-        then baseed on the provided job description by 'job_crawler' agent, \
-        modify it to make it target the provided job description. Fill in the empty brackets with the company name.\
-        Do NOT add any extra skill or new information, keep it honest.",
-        agent=cover_letter_modifier,
-        expected_output="A modified version of cover letter, tailor-made for the job description",
-    )
-
-
-evaluate = Task(
-    description=f"Provided the modified CV and Cover Letter, and the key points of the job description,\
-        give a score to the candidate from 0-100, based on how well suited they are for this job",
-    agent=recruiter,
-    expected_output="Score in the range [0-100]",
-)
 
 # USER INPUTS
-cover_letter_path = r'CoverLetter.pdf'
-cv_path = r'CV.pdf'
-job_url = ["https://careers.veeva.com/job/6bdc9bcc-1362-462b-a592-b3e07795673c/software-engineer-full-stack-ottawa-canada/?lever-source=Linkedin"]
+page_url = ['https://www.toysrus.ca/en/home']
 
-extract_job_information_task = extract_job_information(job_url)
-cv_modifying_task = cv_modifying(cv_path)
-cover_letter_modifying_task = cover_letter_modifying(cover_letter_path)
+
+# Create the tasks
+ecommerce_analysis_task = create_ecommerce_analysis_task(page_url)
 
 # make the crew
 crew = Crew(
-    agents=[job_crawler, cv_modifier, cover_letter_modifier, recruiter],
+    agents=[business_crawler],
     tasks=[
-        extract_job_information_task,
-        cv_modifying_task,
-        cover_letter_modifying_task,
-        evaluate
+        ecommerce_analysis_task
     ],
     verbose=2
 )
 
 # Let's start!
-result = crew.kickoff()
+crew_output = crew.kickoff()
+
+
+# Accessing the crew output
+print(f"Raw Output: {crew_output.raw}")
+if crew_output.json_dict:
+    print(f"JSON Output: {json.dumps(crew_output.json_dict, indent=2)}")
+if crew_output.pydantic:
+    print(f"Pydantic Output: {crew_output.pydantic}")
+print(f"Tasks Output: {crew_output.tasks_output}")
+print(f"Token Usage: {crew_output.token_usage}")
