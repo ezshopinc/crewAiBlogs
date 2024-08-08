@@ -11,6 +11,11 @@ blog_service = BlogService()
 
 @app.get("/")
 async def root():
+    return {"Hello": "World"}
+
+
+@app.get("/first")
+async def blog():
     try:
         return await blog_service.generate_blog_post("Local Business Automation")
     except asyncio.CancelledError:
