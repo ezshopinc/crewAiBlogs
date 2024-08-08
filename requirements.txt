@@ -1,7 +1,7 @@
-fastapi==0.97.0  # Make sure this version is compatible with pydantic >=2.4.2
+fastapi==0.95.1
 uvicorn==0.22.0
-crewai==0.1.7
-langchain
+crewai==0.1.0  # Make sure this version is compatible with pydantic<2.0.0
+langchain==0.0.351
 openai
 python-dotenv==1.0.0
 PyMuPDF==1.22.1
