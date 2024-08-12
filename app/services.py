@@ -1,6 +1,6 @@
 from crewai import Agent, Task, Crew
-from langchain.llms import OpenAI
-from agents import BlogCreationAgents
+from langchain_community.llms import OpenAI
+from app.agents import BlogCreationAgents
 from fastapi import HTTPException
 import asyncio
 

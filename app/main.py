@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from services import BlogService
+from app.services import BlogService
 import asyncio
 
 import random
