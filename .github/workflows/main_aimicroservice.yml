@@ -60,9 +60,6 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
       
-      - name: Change to server directory
-        run: cd server
-      
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -76,4 +73,4 @@ jobs:
         with:
           app-name: 'AiMicroService'
           slot-name: 'Production'
-          startup-command: 'uvicorn server:app --reload'
+          startup-command: 'uvicorn server.server:app --host 0.0.0.0 --port 8000'
