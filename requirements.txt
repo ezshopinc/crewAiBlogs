@@ -1,12 +1,12 @@
-fastapi
-uvicorn
-gunicorn
-crewai  # Make sure this version is compatible with pydantic<2.0.0
-langchain
-openai
-python-dotenv
-PyMuPDF
-langchain-openai
+# fastapi
+# uvicorn
+# gunicorn
+# crewai  # Make sure this version is compatible with pydantic<2.0.0
+# langchain
+# openai
+# python-dotenv
+# PyMuPDF
+# langchain-openai
 
 # fastapi
 # uvicorn
