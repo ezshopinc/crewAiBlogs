@@ -6,4 +6,4 @@ langchain
 openai
 python-dotenv
 PyMuPDF
-langchain_openai
+langchain-openai
