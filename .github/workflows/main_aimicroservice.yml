@@ -24,7 +24,14 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-
+          
+      # New step: Install and configure Poetry
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.5.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
           
       - name: Install dependencies
         run: |
