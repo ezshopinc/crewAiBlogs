@@ -32,15 +32,17 @@ class BlogOptimizationAgents:
     def __init__(self):
         load_dotenv()
         self.model = ChatOpenAI(model_name="gpt-4o-2024-08-06", temperature=0.5)
-        self.retriever = FileReadTool(file_path='./blog_post.txt')
+        self.blog = FileReadTool(file_path='./blog_post.txt')
+        self.prompt = FileReadTool(file_path='./prompt.txt')
+
 
     def writer_agent(self):
         return Agent(
             role="Keyword Sentence Writer",
-            goal="""Generate sentences that naturally incorporate a given keyword.""",
+            goal="""Generate sentences that naturally incorporate a given keyword. Ensure that the sentences do not overlap or repeat information, and each sentence should add unique value. The sentences should follow the theme requested in the prompt, and relate to the content of the blog post.""",
             backstory="You are a skilled copywriter with expertise in SEO-friendly content creation.",
             llm=self.model,
-            tools=[self.retriever],
+            tools=[self.blog, self.prompt],
         )
 
     def paragraph_recommender_agent(self):
@@ -49,16 +51,16 @@ class BlogOptimizationAgents:
             goal="""Analyze the blog post and new sentences, then suggest appropriate paragraphs for integrating the new content.""",
             backstory="You are an expert content analyst with a deep understanding of blog structure and flow.",
             llm=self.model,
-            tools=[self.retriever],
+            tools=[self.blog],
         )
 
     def integrator_agent(self):
         return Agent(
             role='Content Integration Specialist',
-            goal="""Incorporate new sentences into an existing blog post.""",
-            backstory="You are an expert content editor with a talent for seamlessly blending new information into existing text.",
+            goal="""Ensure that the new sentences blend seamlessly with the original content, maintaining the original theme, intent, coherence and readability.""",
+            backstory="""You are a Content Integration Specialist. Your task is to integrate the original text with the newly generated sentences while maintaining the text's coherence and unique value""",
             llm=self.model,
-            tools=[self.retriever],
+            tools=[self.blog, self.prompt],
         )
 
     def synonym_finder_agent(self):
@@ -76,7 +78,7 @@ class BlogOptimizationAgents:
             use the provided synonyms without altering the meaning of the text, while including as many different synonyms as possible.""",
             backstory="You are a content optimization specialist skilled in maintaining readability while adjusting keyword density.",
             llm=self.model,
-            tools=[self.retriever],
+            tools=[self.blog],
         )
 
 def generate_blog_post(keyword: str):
@@ -93,6 +95,7 @@ def generate_blog_post(keyword: str):
         paragraph_recommender_agent = agents.paragraph_recommender_agent()
         integrator_agent = agents.integrator_agent()
 
+
         writing_task = Task(
             description=f"Generate {analysis['target_count']} natural, engaging sentences using the keyword '{keyword}'.",
             agent=writer_agent,
@@ -107,7 +110,7 @@ def generate_blog_post(keyword: str):
         )
 
         integrating_task = Task(
-            description="Integrate the provided sentences seamlessly into the blog post html.",
+            description="Integrate generated sentences into the original text. Each sentence should add unqiue value to the post",
             agent=integrator_agent,
             expected_output="An enhanced blog post HTML with integrated keyword-rich sentences",
             context=[recommending_task]
@@ -148,6 +151,6 @@ def generate_blog_post(keyword: str):
     return result
 
 # Example usage:
-keyword = "leather"
+keyword = "poppy seeds"
 result = generate_blog_post(keyword=keyword)
 print(result)
