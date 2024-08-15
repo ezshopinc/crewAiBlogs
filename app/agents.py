@@ -11,9 +11,9 @@ class BlogCreationAgents:
     def __init__(self):
         load_dotenv()
         # Retrieve the OpenAI API key from environment variables
-        openai_api_key = os.getenv("OPENAI_API_KEY")
+        # openai_api_key = os.getenv("OPENAI_API_KEY")
         self.model = ChatOpenAI(model_name="gpt-4-turbo",
-                                temperature=0.8, openai_api_key=openai_api_key)
+                                temperature=0.8)
 
     def researcher_agent(self):
         return Agent(

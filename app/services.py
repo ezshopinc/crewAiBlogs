@@ -7,7 +7,8 @@ import asyncio
 
 class BlogService:
     def __init__(self):
-        self.llm = OpenAI()
+
+        self.llm = ""
 
     async def test():
         return {"test": "test"}
