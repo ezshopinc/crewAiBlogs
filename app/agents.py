@@ -4,12 +4,16 @@ from langchain_openai import ChatOpenAI
 from langchain.tools import tool
 import re
 from langchain_community.document_loaders import PyMuPDFLoader
+import os
 
 
 class BlogCreationAgents:
     def __init__(self):
         load_dotenv()
-        self.model = ChatOpenAI(model_name="gpt-4-turbo", temperature=0.8)
+        # Retrieve the OpenAI API key from environment variables
+        openai_api_key = os.getenv("OPENAI_API_KEY")
+        self.model = ChatOpenAI(model_name="gpt-4-turbo",
+                                temperature=0.8, openai_api_key=openai_api_key)
 
     def researcher_agent(self):
         return Agent(
