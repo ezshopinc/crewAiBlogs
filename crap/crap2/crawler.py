@@ -53,6 +53,6 @@ def generate_blog_post(URL: str):
 
 
 # Example usage:
-URL = "https://www.twiggmusique.com/en/woodwinds/"
+URL = "https://www.twiggmusique.com/"
 result = generate_blog_post(URL=URL)
 print(result)

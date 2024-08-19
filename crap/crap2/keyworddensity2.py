@@ -176,6 +176,6 @@ def generate_blog_post(keyword: str):
     return result
 
 # Example usage:
-keyword = "wild sex"
+keyword = "wildlife conservation"
 result = generate_blog_post(keyword=keyword)
 print(result)
